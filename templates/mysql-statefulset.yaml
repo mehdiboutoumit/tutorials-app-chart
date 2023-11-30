@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.mysql.statefulset.name }}
+  namespace: exam
+spec:
+  serviceName: {{ .Values.mysql.serviceName }}
+  replicas: {{ .Values.mysql.replicas }}
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.mysql.secret.name }}
+                key: MYSQL_ROOT_PASSWORD
+        ports:
+        - containerPort: 3306
+      volumeClaimTemplates:
+      - metadata:
+          name: mysql-pv-claim
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 1Gi

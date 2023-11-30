@@ -1,0 +1,9 @@
+# Fichier NOTES.txt
+{{- if eq .Values.service.type "ClusterIP" -}}
+Cluster IP: {{ template "tutorials-app-chart.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- else if eq .Values.service.type "NodePort" -}}
+Node Port: {{ .Values.service.nodePort }}
+{{- else if eq .Values.service.type "LoadBalancer" -}}
+Load Balancer IP: {{ .Values.service.loadBalancerIP }}
+Load Balancer Ingress: {{ .Values.service.loadBalancerIngress }}
+{{- end }}

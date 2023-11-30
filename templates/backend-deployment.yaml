@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tutorials-app-chart.fullname" . }}
+ 
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "tutorials-app-chart.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "tutorials-app-chart.name" . }}
+    spec:
+      containers:
+        - name: backend-container
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.mysql.configMap.name }}
+                  key: host
+            - name: DB_PORT
+              value: "{{ .Values.mysql.port }}"
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.mysql.configMap.name }}
+                  key: dbname
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mysql.secret.name }}
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mysql.secret.name }}
+                  key: password

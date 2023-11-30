@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tutorials-app-chart.fullname" . }}
+ 
+
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "tutorials-app-chart.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "tutorials-app-chart.name" . }}
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          ports:
+            - containerPort: 80
